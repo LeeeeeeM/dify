@@ -14,9 +14,10 @@ from controllers.console.wraps import (
     cloud_edition_billing_resource_check,
     setup_required,
 )
-from fields.file_fields import file_fields, upload_config_fields
+from fields.file_fields import file_fields, upload_config_fields, file_fields_with_signed_url
 from libs.login import login_required
 from services.file_service import FileService
+from core.file import helpers as file_helpers
 
 from .error import (
     FileTooLargeError,
@@ -46,7 +47,7 @@ class FileApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    @marshal_with(file_fields)
+    @marshal_with(file_fields_with_signed_url)
     @cloud_edition_billing_resource_check("documents")
     def post(self):
         file = request.files["file"]
@@ -81,7 +82,16 @@ class FileApi(Resource):
         except services.errors.file.UnsupportedFileTypeError:
             raise UnsupportedFileTypeError()
 
-        return upload_file, 201
+        return {
+            "id": upload_file.id,
+            "name": upload_file.name,
+            "size": upload_file.size,
+            "extension": upload_file.extension,
+            "url": file_helpers.get_signed_file_url(upload_file_id=upload_file.id),
+            "mime_type": upload_file.mime_type,
+            "created_by": upload_file.created_by,
+            "created_at": upload_file.created_at,
+        }, 201
 
 
 class FilePreviewApi(Resource):

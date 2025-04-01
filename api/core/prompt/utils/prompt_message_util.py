@@ -11,11 +11,12 @@ from core.model_runtime.entities import (
     TextPromptMessageContent,
 )
 from core.prompt.simple_prompt_transform import ModelMode
+from core.file.models import File
 
 
 class PromptMessageUtil:
     @staticmethod
-    def prompt_messages_to_prompt_for_saving(model_mode: str, prompt_messages: Sequence[PromptMessage]) -> list[dict]:
+    def prompt_messages_to_prompt_for_saving(model_mode: str, prompt_messages: Sequence[PromptMessage], sys_files: Sequence[File] = []) -> list[dict]:
         """
         Prompt messages to prompt for saving.
         :param model_mode: model mode
@@ -51,6 +52,8 @@ class PromptMessageUtil:
 
                 text = ""
                 files = []
+                for file in sys_files:
+                    files.append(file)
                 if isinstance(prompt_message.content, list):
                     for content in prompt_message.content:
                         if isinstance(content, TextPromptMessageContent):
@@ -84,6 +87,8 @@ class PromptMessageUtil:
             prompt_message = prompt_messages[0]
             text = ""
             files = []
+            for file in sys_files:
+                files.append(file)
             if isinstance(prompt_message.content, list):
                 for content in prompt_message.content:
                     if content.type == PromptMessageContentType.TEXT:

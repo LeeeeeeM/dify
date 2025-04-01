@@ -164,14 +164,17 @@ class LLMNode(BaseNode[LLMNodeData]):
                 jinja2_variables=self.node_data.prompt_config.jinja2_variables,
             )
 
+            cur_sys_files = self._fetch_files(selector=self.node_data.vision.configs.variable_selector)
             process_data = {
                 "model_mode": model_config.mode,
                 "prompts": PromptMessageUtil.prompt_messages_to_prompt_for_saving(
-                    model_mode=model_config.mode, prompt_messages=prompt_messages
+                    model_mode=model_config.mode, prompt_messages=prompt_messages, sys_files=cur_sys_files
                 ),
                 "model_provider": model_config.provider,
                 "model_name": model_config.model,
             }
+
+            # print(f"process_data, {process_data} , prompt_messages: {prompt_messages}")
 
             # handle invoke result
             generator = self._invoke_llm(
