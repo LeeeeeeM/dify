@@ -146,7 +146,7 @@ def _build_from_local_file(
         tenant_id=tenant_id,
         type=file_type,
         transfer_method=transfer_method,
-        remote_url=row.source_url,
+        remote_url=helpers.get_signed_file_url(upload_file_id=str(upload_file_id)),
         related_id=mapping.get("upload_file_id"),
         size=row.size,
         storage_key=row.key,
