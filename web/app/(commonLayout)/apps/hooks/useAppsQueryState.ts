@@ -11,7 +11,8 @@ type AppsQuery = {
 function parseParams(params: ReadonlyURLSearchParams): AppsQuery {
   const tagIDs = params.get('tagIDs')?.split(';')
   const keywords = params.get('keywords') || undefined
-  const isCreatedByMe = params.get('isCreatedByMe') === 'true'
+  // 默认选中自己创建的应用
+  const isCreatedByMe = params.get('isCreatedByMe') !== 'false'
   return { tagIDs, keywords, isCreatedByMe }
 }
 
@@ -32,7 +33,7 @@ function updateSearchParams(query: AppsQuery, current: URLSearchParams) {
   if (isCreatedByMe)
     current.set('isCreatedByMe', 'true')
   else
-    current.delete('isCreatedByMe')
+    current.set('isCreatedByMe', 'false')
 }
 
 function useAppsQueryState() {
